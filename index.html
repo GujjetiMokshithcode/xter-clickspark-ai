@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.58 11.5L9.63 8.02c-.42-.26-.96.08-.96.53v6.9c0 .45.54.79.96.53l5.95-3.48c.37-.22.37-.78 0-1z' fill='%233b82f6'/%3E%3Cpath d='M4.2 18.2c1.16 1.16 2.7 1.97 4.4 2.31l1.03-4.52c-.68-.16-1.31-.46-1.83-.9L4.2 18.2z' fill='%233b82f6'/%3E%3Cpath d='M19.8 5.8c-1.16-1.16-2.7-1.97-4.4-2.31L14.37 8.02c.68.16 1.31.46 1.83.9l3.6-3.12z' fill='%233b82f6' opacity='0.5'/%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <title>ClickSpark AI | AI YouTube Thumbnail Generator</title>
+    <meta name="description" content="Generate stunning, click-worthy YouTube thumbnails in seconds with ClickSpark AI. Just enter your video title and let our AI create the perfect, high-CTR thumbnail for you." />
+    <meta name="keywords" content="AI thumbnail generator, YouTube thumbnail maker, free thumbnail generator, AI image generator, YouTube SEO, CTR optimization, Gemini API, content creator tools" />
+    <meta name="author" content="ClickSpark AI" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Language" content="en" />
+    <!-- IMPORTANT: Replace [YOUR_APP_URL] with your actual domain before deployment -->
+    <link rel="canonical" href="https://clickspark-ai.vercel.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://clickspark-ai.vercel.app/" />
+    <meta property="og:title" content="ClickSpark AI | AI YouTube Thumbnail Generator" />
+    <meta property="og:description" content="Generate stunning, click-worthy YouTube thumbnails in seconds with ClickSpark AI." />
+    <meta property="og:image" content="https://clickspark-ai.vercel.app/social-share-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://clickspark-ai.vercel.app/" />
+    <meta property="twitter:title" content="ClickSpark AI | AI YouTube Thumbnail Generator" />
+    <meta property="twitter:description" content="Generate stunning, click-worthy YouTube thumbnails in seconds with ClickSpark AI." />
+    <meta property="twitter:image" content="https://clickspark-ai.vercel.app/social-share-image.png" />
+
+    <!-- Font preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Manrope', 'sans-serif'],
+            },
+            colors: {
+              'brand-bg': '#050505',
+              'brand-accent': '#3b82f6', // blue-500
+              'brand-accent-hover': '#60a5fa', // blue-400
+              'brand-text': '#cccccc',
+              'brand-text-secondary': '#6b7280',
+              'glass-bg': 'rgba(255, 255, 255, 0.05)',
+              'glass-border': 'rgba(255, 255, 255, 0.1)',
+            },
+            boxShadow: {
+              'glow': '0 0 15px rgba(59, 130, 246, 0.3)',
+              'glow-lg': '0 0 30px rgba(59, 130, 246, 0.4)',
+              'glow-deep': '0 0 40px rgba(59, 130, 246, 0.25)',
+              'glass-inset': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.08)',
+            },
+            borderRadius: {
+              '4xl': '2rem',
+            },
+            gridTemplateColumns: {
+              '16': 'repeat(16, minmax(0, 1fr))',
+            }
+          },
+        },
+      }
+    </script>
+    <link rel="stylesheet" href="/index.css">
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+    "vite": "https://aistudiocdn.com/vite@^7.1.5",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.2"
+  }
+}
+</script>
+<!-- JSON-LD Structured Data for SEO & LSO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ClickSpark AI",
+  "description": "An AI-powered tool to generate high-quality YouTube thumbnails from a text prompt. The application uses Google's Gemini models to create visually appealing and click-through-rate (CTR) optimized images for content creators.",
+  "url": "https://clickspark-ai.vercel.app/",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "ClickSpark AI"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <div class="cursor-glow"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
