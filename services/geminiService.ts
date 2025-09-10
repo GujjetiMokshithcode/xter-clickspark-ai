@@ -3,23 +3,65 @@ import type { ReferenceImage, ModelOption } from '../types';
 
 export const AVAILABLE_MODELS: ModelOption[] = [
   {
-    id: 'imagen-4.0-generate-001',
-    name: 'Imagen 4.0',
-    description: 'Latest Imagen model (recommended)',
-    supportsImageGeneration: true,
-    supportsImageEditing: false,
-  },
-  {
     id: 'imagen-3.0-generate-001',
     name: 'Imagen 3.0',
-    description: 'Previous generation Imagen',
+    description: 'Stable and widely available (recommended for India)',
     supportsImageGeneration: true,
     supportsImageEditing: false,
   },
   {
     id: 'imagen-2.0-generate-001',
     name: 'Imagen 2.0',
-    description: 'Older but stable Imagen model',
+    description: 'Older but very stable model',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'imagen-3.0-fast-generate-001',
+    name: 'Imagen 3.0 Fast',
+    description: 'Faster generation, good for testing',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'imagen-4.0-generate-001',
+    name: 'Imagen 4.0',
+    description: 'Latest model (may not be available in all regions)',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'imagen-4.0-fast-generate-001',
+    name: 'Imagen 4.0 Fast',
+    description: 'Faster Imagen 4.0 (limited availability)',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'gemini-2.0-flash-thinking-exp-01-21',
+    name: 'Gemini 2.0 Flash Thinking',
+    description: 'Experimental model with reasoning (India available)',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'gemini-2.0-flash-exp',
+    name: 'Gemini 2.0 Flash Experimental',
+    description: 'Latest experimental Gemini model',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'gemini-1.5-flash',
+    name: 'Gemini 1.5 Flash',
+    description: 'Fast and efficient, widely available in India',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'gemini-1.5-pro',
+    name: 'Gemini 1.5 Pro',
+    description: 'High-quality model, good availability in India',
     supportsImageGeneration: true,
     supportsImageEditing: false,
   },
@@ -125,25 +167,59 @@ Key instructions:
   } else {
     // Generate a new image from scratch
     try {
-      const response = await ai.models.generateImages({
-        model: selectedModel,
-        prompt: finalPrompt,
-        config: {
-          numberOfImages: 1,
-          outputMimeType: 'image/jpeg',
-          aspectRatio: '16:9',
-        },
-      });
+      // Check if it's an Imagen model or Gemini model
+      if (selectedModel.includes('imagen')) {
+        const response = await ai.models.generateImages({
+          model: selectedModel,
+          prompt: finalPrompt,
+          config: {
+            numberOfImages: 1,
+            outputMimeType: 'image/jpeg',
+            aspectRatio: '16:9',
+          },
+        });
 
-      if (response.generatedImages && response.generatedImages.length > 0) {
-        const base64ImageBytes = response.generatedImages[0].image.imageBytes;
-        return `data:image/jpeg;base64,${base64ImageBytes}`;
+        if (response.generatedImages && response.generatedImages.length > 0) {
+          const base64ImageBytes = response.generatedImages[0].image.imageBytes;
+          return `data:image/jpeg;base64,${base64ImageBytes}`;
+        } else {
+          throw new Error("The model did not return any images.");
+        }
       } else {
-        throw new Error("The model did not return any images.");
+        // For Gemini models, use generateContent with image generation
+        const imagePrompt = `Generate a high-quality 16:9 YouTube thumbnail image based on this description: ${finalPrompt}. Make it visually striking, professional, and optimized for high click-through rates.`;
+        
+        const response = await ai.models.generateContent({
+          model: selectedModel,
+          contents: imagePrompt,
+          config: {
+            responseModalities: [Modality.IMAGE],
+          },
+        });
+
+        for (const part of response.candidates[0].content.parts) {
+          if (part.inlineData) {
+            const base64ImageBytes = part.inlineData.data;
+            const mimeType = part.inlineData.mimeType;
+            return `data:${mimeType};base64,${base64ImageBytes}`;
+          }
+        }
+        throw new Error("The model did not return an image.");
       }
     } catch (error) {
       console.error("Error generating image with Gemini:", error);
-      throw new Error(`Failed to generate thumbnail with ${selectedModel}. Try a different model or check if the model is available in your region.`);
+      
+      // Provide more specific error messages
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+        throw new Error(`Model ${selectedModel} is not available in your region. Try Imagen 3.0 or Gemini 1.5 Flash instead.`);
+      } else if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+        throw new Error(`API quota exceeded. Check your Google AI Studio usage limits.`);
+      } else if (errorMessage.includes('permission') || errorMessage.includes('403')) {
+        throw new Error(`Permission denied. Make sure your API key has access to ${selectedModel}.`);
+      } else {
+        throw new Error(`Failed to generate thumbnail with ${selectedModel}. Error: ${errorMessage}. Try a different model.`);
+      }
     }
   }
 };
