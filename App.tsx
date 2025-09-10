@@ -248,6 +248,8 @@ const App: React.FC = () => {
         isOpen={isApiKeyModalOpen}
         onClose={() => setIsApiKeyModalOpen(false)}
         onSave={handleSaveApiKey}
+        currentApiKey={userApiKey || ''}
+        isEditing={isEditingApiKey}
       />
     </div>
   );
