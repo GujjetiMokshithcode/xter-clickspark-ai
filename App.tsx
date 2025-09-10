@@ -51,6 +51,7 @@ const App: React.FC = () => {
   const [credits, setCredits] = useState(MAX_FREE_CREDITS);
   const [userApiKey, setUserApiKey] = useState<string | null>(null);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [isEditingApiKey, setIsEditingApiKey] = useState(false);
 
   // Load initial state from localStorage
   useEffect(() => {
@@ -145,9 +146,19 @@ const App: React.FC = () => {
   };
   
   const handleSaveApiKey = (apiKey: string) => {
-    setUserApiKey(apiKey);
-    localStorage.setItem('userApiKey', apiKey);
+    if (apiKey.trim()) {
+      setUserApiKey(apiKey);
+      localStorage.setItem('userApiKey', apiKey);
+    } else {
+      // Remove API key
+      setUserApiKey(null);
+      localStorage.removeItem('userApiKey');
+      // Reset credits when removing API key
+      setCredits(MAX_FREE_CREDITS);
+      localStorage.setItem('thumbnailCredits', String(MAX_FREE_CREDITS));
+    }
     setIsApiKeyModalOpen(false);
+    setIsEditingApiKey(false);
   };
 
   const handleViewToggle = () => {
