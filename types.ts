@@ -12,3 +12,11 @@ export interface ReferenceImage {
   data: string; // base64 encoded string
   mimeType: string;
 }
+
+export interface ModelOption {
+  id: string;
+  name: string;
+  description: string;
+  supportsImageGeneration: boolean;
+  supportsImageEditing: boolean;
+}

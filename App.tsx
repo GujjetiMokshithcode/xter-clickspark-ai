@@ -42,6 +42,7 @@ const App: React.FC = () => {
   // Form state
   const [title, setTitle] = useState('');
   const [style, setStyle] = useState('Default');
+  const [selectedModel, setSelectedModel] = useState('imagen-3.0-generate-001'); // Start with older model as fallback
   const [optimizeCtr, setOptimizeCtr] = useState(true);
   const [referenceImage, setReferenceImage] = useState<ReferenceImage | null>(null);
 
@@ -98,7 +99,8 @@ const App: React.FC = () => {
         style,
         optimizeCtr,
         referenceImage,
-        userApiKey
+        userApiKey,
+        selectedModel
       });
 
       const newImage: GeneratedImage = {
@@ -126,7 +128,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [title, style, optimizeCtr, referenceImage, userApiKey, isOutOfCredits, credits, hasUserApiKey, history]);
+  }, [title, style, selectedModel, optimizeCtr, referenceImage, userApiKey, isOutOfCredits, credits, hasUserApiKey, history]);
 
   const handleReferenceImageChange = async (file: File | null) => {
     if (file) {
@@ -200,6 +202,8 @@ const App: React.FC = () => {
                           setTitle={setTitle}
                           style={style}
                           setStyle={setStyle}
+                          selectedModel={selectedModel}
+                          setSelectedModel={setSelectedModel}
                           optimizeCtr={optimizeCtr}
                           setOptimizeCtr={setOptimizeCtr}
                           referenceImage={referenceImage}

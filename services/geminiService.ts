@@ -1,5 +1,32 @@
 import { GoogleGenAI, Modality } from "@google/genai";
-import type { ReferenceImage } from '../types';
+import type { ReferenceImage, ModelOption } from '../types';
+
+export const AVAILABLE_MODELS: ModelOption[] = [
+  {
+    id: 'imagen-4.0-generate-001',
+    name: 'Imagen 4.0',
+    description: 'Latest Imagen model (recommended)',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'imagen-3.0-generate-001',
+    name: 'Imagen 3.0',
+    description: 'Previous generation Imagen',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+  {
+    id: 'imagen-2.0-generate-001',
+    name: 'Imagen 2.0',
+    description: 'Older but stable Imagen model',
+    supportsImageGeneration: true,
+    supportsImageEditing: false,
+  },
+];
+
+export const IMAGE_EDITING_MODEL = 'gemini-2.5-flash-image-preview';
+export const PROMPT_ENHANCEMENT_MODEL = 'gemini-2.5-flash';
 
 interface GenerateThumbnailProps {
   title: string;
@@ -7,6 +34,7 @@ interface GenerateThumbnailProps {
   optimizeCtr: boolean;
   referenceImage: ReferenceImage | null;
   userApiKey: string | null;
+  selectedModel: string;
 }
 
 /**
@@ -19,7 +47,8 @@ export const generateThumbnail = async ({
   style,
   optimizeCtr,
   referenceImage,
-  userApiKey
+  userApiKey,
+  selectedModel
 }: GenerateThumbnailProps): Promise<string> => {
   const apiKey = userApiKey || process.env.GEMINI_API_KEY;
 
@@ -42,7 +71,7 @@ Video Title: "${title}"
 Style: "${style}"`;
       
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: PROMPT_ENHANCEMENT_MODEL,
         contents: enhancementPrompt,
       });
       finalPrompt = response.text;
@@ -64,7 +93,7 @@ Key instructions:
 - **Goal:** The final image must be a high-quality, compelling thumbnail that masterfully blends the essence of the original image with the specific creative direction of the prompt.`;
       
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image-preview',
+        model: IMAGE_EDITING_MODEL,
         contents: {
           parts: [
             {
@@ -97,7 +126,7 @@ Key instructions:
     // Generate a new image from scratch
     try {
       const response = await ai.models.generateImages({
-        model: 'imagen-4.0-generate-001',
+        model: selectedModel,
         prompt: finalPrompt,
         config: {
           numberOfImages: 1,
@@ -114,7 +143,7 @@ Key instructions:
       }
     } catch (error) {
       console.error("Error generating image with Gemini:", error);
-      throw new Error("Failed to generate thumbnail from prompt.");
+      throw new Error(`Failed to generate thumbnail with ${selectedModel}. Try a different model or check if the model is available in your region.`);
     }
   }
 };
