@@ -73,11 +73,11 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                 <h3 className="font-semibold text-white">Setup Instructions:</h3>
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-brand-accent/20 text-brand-accent font-bold">1</div>
-                  <p>Get a <strong>Groq API key</strong> from <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-accent-hover hover:underline">Groq Console</a> (free tier available)</p>
+                  <p>Get a <strong>Groq API key</strong> from <a href="https://console.groq.com/keys" target=\"_blank" rel="noopener noreferrer\" className="font-semibold text-brand-accent-hover hover:underline">Groq Console</a> (free tier available)</p>
                 </div>
                  <div className="flex gap-4">
                   <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-brand-accent/20 text-brand-accent font-bold">2</div>
-                  <p>Get a <strong>Hugging Face token</strong> from <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-accent-hover hover:underline">HF Settings</a> (completely free)</p>
+                  <p>Get a <strong>Hugging Face token</strong> from <a href="https://huggingface.co/settings/tokens" target=\"_blank" rel="noopener noreferrer\" className="font-semibold text-brand-accent-hover hover:underline">HF Settings</a> (completely free)</p>
                 </div>
                  <div className="flex gap-4">
                   <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-brand-accent/20 text-brand-accent font-bold">3</div>
