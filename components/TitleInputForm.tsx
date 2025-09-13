@@ -1,6 +1,6 @@
 import React, { useRef, memo } from 'react';
 import type { ReferenceImage, ModelOption } from '../types';
-import { AVAILABLE_MODELS } from '../services/geminiService';
+import { AVAILABLE_MODELS } from '../services/aiService';
 
 interface TitleInputFormProps {
   title: string;

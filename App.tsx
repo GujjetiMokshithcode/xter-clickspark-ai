@@ -7,7 +7,7 @@ import HistoryGrid from './components/HistoryGrid';
 import ApiKeyModal from './components/ApiKeyModal';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
-import { generateThumbnail } from './services/geminiService';
+import { generateThumbnail, analyzeThumbnail } from './services/aiService';
 import type { GeneratedImage, ReferenceImage } from './types';
 
 const MAX_FREE_CREDITS = 5;
@@ -38,11 +38,12 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [thumbnailAnalysis, setThumbnailAnalysis] = useState<string | null>(null);
   
   // Form state
   const [title, setTitle] = useState('');
   const [style, setStyle] = useState('Default');
-  const [selectedModel, setSelectedModel] = useState('imagen-3.0-generate-001'); // Start with older model as fallback
+  const [selectedModel, setSelectedModel] = useState('black-forest-labs/FLUX.1-dev'); // Default to FLUX.1-dev
   const [optimizeCtr, setOptimizeCtr] = useState(true);
   const [referenceImage, setReferenceImage] = useState<ReferenceImage | null>(null);
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<GeneratedImage[]>([]);
   const [credits, setCredits] = useState(MAX_FREE_CREDITS);
   const [userApiKey, setUserApiKey] = useState<string | null>(null);
+  const [hfApiToken, setHfApiToken] = useState<string | null>(null);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isEditingApiKey, setIsEditingApiKey] = useState(false);
 
@@ -62,6 +64,8 @@ const App: React.FC = () => {
       const storedKey = localStorage.getItem('userApiKey');
       if (storedKey) setUserApiKey(storedKey);
 
+      const storedHfToken = localStorage.getItem('hfApiToken');
+      if (storedHfToken) setHfApiToken(storedHfToken);
       const storedCredits = localStorage.getItem('thumbnailCredits');
       if (storedCredits !== null) {
         setCredits(parseInt(storedCredits, 10));
@@ -85,7 +89,9 @@ const App: React.FC = () => {
   }, []);
 
   const hasUserApiKey = !!userApiKey;
-  const isOutOfCredits = !hasUserApiKey && credits <= 0;
+  const hasHfToken = !!hfApiToken;
+  const hasAllKeys = hasUserApiKey && hasHfToken;
+  const isOutOfCredits = !hasAllKeys && credits <= 0;
 
   const handleGenerate = useCallback(async () => {
     if (!title.trim() || isOutOfCredits) return;
@@ -93,6 +99,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setGeneratedImage(null);
     setError(null);
+    setThumbnailAnalysis(null);
 
     try {
       const src = await generateThumbnail({
@@ -117,7 +124,14 @@ const App: React.FC = () => {
       setHistory(updatedHistory);
       localStorage.setItem('thumbnailHistory', JSON.stringify(updatedHistory));
 
-      if (!hasUserApiKey) {
+      // Analyze the generated thumbnail
+      try {
+        const analysis = await analyzeThumbnail(src, title, userApiKey);
+        setThumbnailAnalysis(analysis);
+      } catch (analysisError) {
+        console.warn("Could not analyze thumbnail:", analysisError);
+      }
+      if (!hasAllKeys) {
         const newCredits = credits - 1;
         setCredits(newCredits);
         localStorage.setItem('thumbnailCredits', String(newCredits));
@@ -145,14 +159,18 @@ const App: React.FC = () => {
     }
   };
   
-  const handleSaveApiKey = (apiKey: string) => {
-    if (apiKey.trim()) {
-      setUserApiKey(apiKey);
-      localStorage.setItem('userApiKey', apiKey);
+  const handleSaveApiKey = (groqApiKey: string, hfToken: string) => {
+    if (groqApiKey.trim() && hfToken.trim()) {
+      setUserApiKey(groqApiKey);
+      setHfApiToken(hfToken);
+      localStorage.setItem('userApiKey', groqApiKey);
+      localStorage.setItem('hfApiToken', hfToken);
     } else {
-      // Remove API key
+      // Remove API keys
       setUserApiKey(null);
+      setHfApiToken(null);
       localStorage.removeItem('userApiKey');
+      localStorage.removeItem('hfApiToken');
       // Reset credits when removing API key
       setCredits(MAX_FREE_CREDITS);
       localStorage.setItem('thumbnailCredits', String(MAX_FREE_CREDITS));
@@ -185,7 +203,7 @@ const App: React.FC = () => {
         onViewToggle={handleViewToggle}
         activeView={activeView}
         credits={credits}
-        hasUserApiKey={hasUserApiKey}
+        hasUserApiKey={hasAllKeys}
         onEnterApiKey={() => setIsApiKeyModalOpen(true)}
         currentPage={currentPage}
         onBackToMain={() => setCurrentPage('main')}
@@ -225,7 +243,12 @@ const App: React.FC = () => {
                           onEnterApiKey={() => setIsApiKeyModalOpen(true)}
                         />
                         {error && <p className="text-center text-red-400 bg-red-900/20 p-3 rounded-lg border border-red-500/50">{error}</p>}
-                        <ThumbnailDisplay image={generatedImage} isLoading={isLoading} error={error} />
+                        <ThumbnailDisplay 
+                          image={generatedImage} 
+                          isLoading={isLoading} 
+                          error={error} 
+                          analysis={thumbnailAnalysis}
+                        />
                     </section>
                   </div>
               </div>
